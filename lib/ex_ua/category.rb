@@ -1,7 +1,7 @@
 module ExUA
   # Represents a category
   class Category
-    attr_reader :id,:parent
+    attr_reader :id,:parent, :url
 
     # @params[ExUA::Client] ex_ua client
     # @params[Fixnum] id Category id
@@ -75,12 +75,11 @@ module ExUA
           links.each { |link|
             case link.attributes["href"].value
             when %r{^/get/}
-              item.download_url = link.attributes["href"].value
               item.title = link.attributes["title"].value
-              item.id = item.download_url.match(%r{^/get/(\d+)})[1].to_i
+              item.id = link.attributes["href"].value.match(%r{^/get/(\d+)})[1].to_i
             when %r{^/load}
               item.additional_servers||=[]
-              item.additional_servers << link.attributes["title"].value
+              item.additional_servers << link.attributes["title"].value.match(%r{fs(\d+)})[1].to_i
             end
           }
         end
