@@ -31,6 +31,11 @@ module ExUA
       @name ||= page_content.root.xpath("//meta[@name='title']/@content").first.value
     end
 
+    # Category description
+    def description
+      @description ||= page_content.root.xpath("//meta[@name='description']/@content").first.value
+    end
+
     # Category picture
     def picture
       @picture ||= page_content.root.xpath("//link[@rel='image_src']/@href").first.value.split("?").first
