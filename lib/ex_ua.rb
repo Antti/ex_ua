@@ -1,3 +1,4 @@
+# @author Andrii Dmytrenko
 module ExUA
   BASE_URL='http://ex.ua'
 end
@@ -24,14 +25,16 @@ module ExUA
     end
 
     # List of available languages
+    # @return [Array<String>]
     def available_languages
       @available_langauges||=@agent.get(BASE_URL).search('select[name=lang] option').inject({}){|acc,el| acc[el.attributes["value"].value]=el.text;acc}
     end
 
     # List of base categories for a given language
     # @param[String] lang Language
-    # @example
+    # @example Usage
     #   client.base_categories('ru')
+    # @return [Array<ExUA::Category>]
     def base_categories(lang)
       %w[video audio images texts games software].map{|cat| Category.new(self, nil, url: "/#{lang}/#{cat}")}
     end

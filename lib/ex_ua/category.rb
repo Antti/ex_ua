@@ -1,11 +1,18 @@
+# @author Andrii Dmytrenko
 module ExUA
   # Represents a category
+  # @example Usage
+  #   #You usually get categories thru ExUA::Client object
+  #   client = ExUA::Client.new
+  #   categories = client.base_categories('ru')
+  #   sub_categories = categories.first.categories
+  #   items = sub_categories.first.categories.first.items
   class Category
     attr_reader :id,:parent, :url
 
-    # @params[ExUA::Client] ex_ua client
-    # @params[Fixnum] id Category id
-    # @params[Hash] options
+    # @param[ExUA::Client] ex_ua client
+    # @param[Fixnum] id Category id
+    # @param[Hash] options
     def initialize(ex_ua, id, options={})
       @ex_ua,@id = ex_ua, id
       @url = options[:url] || url_from_id(id)
@@ -22,26 +29,31 @@ module ExUA
     end
 
     # Canonical url
+    # @return [String]
     def canonical_url
       @canonical_url ||= page_content.root.xpath("//link[@rel='canonical']/@href").first.value
     end
 
     # Category name
+    # @return [String]
     def name
       @name ||= page_content.root.xpath("//meta[@name='title']/@content").first.value
     end
 
     # Category description
+    # @return [String]
     def description
       @description ||= page_content.root.xpath("//meta[@name='description']/@content").first.value
     end
 
     # Category picture
+    # @return [String] url for a picture
     def picture
       @picture ||= page_content.root.xpath("//link[@rel='image_src']/@href").first.value.split("?").first
     end
 
     # List of subcategories
+    # @return [Array<ExUA::Category>]
     def categories
       page_content.search('table.include_0 a b').map do |link|
         if match = link.parent.attributes["href"].value.match(%r{/view/(?<id>\d+)\?r=(?<r>\d+)})
@@ -61,21 +73,25 @@ module ExUA
     end
 
     # Next category
+    # @return [ExUA::Category]
     def next
       Category.new(@ex_ua, self.id, url: next_url)
     end
 
     # Previous category
+    # @return [ExUA::Category]
     def prev
       Category.new(@ex_ua, self.id, url: prev_url)
     end
 
     # Current page number
+    # @return [Fixnum]
     def page
-      CGI.parse(URI.parse(@url).query||"")["p"].first || 0
+      CGI.parse(URI.parse(@url).query||"")["p"].first.to_i || 0
     end
 
     # Download items
+    # @return [Array<ExUA::Item>]
     def items
       table_rows = page_content.search('table.list tr')
       table_rows.map do |tr|
