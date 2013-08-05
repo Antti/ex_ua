@@ -1,3 +1,6 @@
+require 'httparty'
+require 'nokogiri'
+
 module ExUA
   # Client for ExUA
   # @example Usage
@@ -5,17 +8,6 @@ module ExUA
   #   categories = client.base_categories('ru')
   #
   class Client
-    attr_reader :agent
-    private :agent
-
-    def initialize
-      @agent = Mechanize.new
-    end
-
-    def inspect
-      "#<#{self.class}>"
-    end
-
     # List of available languages
     # @return [Array<String>]
     def available_languages
@@ -32,7 +24,7 @@ module ExUA
     end
 
     def get(url)
-      agent.get("#{ExUA::BASE_URL}#{url}")
+      Nokogiri.parse(HTTParty.get("#{ExUA::BASE_URL}#{url}").body)
     end
   end
 end

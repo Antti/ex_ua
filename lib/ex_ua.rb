@@ -3,7 +3,6 @@ require "ex_ua/version"
 require 'ex_ua/client'
 require "ex_ua/item"
 require "ex_ua/category"
-require 'mechanize'
 
 module ExUA
   BASE_URL='http://www.ex.ua'
