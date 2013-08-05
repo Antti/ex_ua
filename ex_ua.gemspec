@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
 
   # specify any dependencies here; for example:
   s.add_development_dependency "rspec", '>= 2.10.0'
-  s.add_development_dependency "rake"
+  s.add_development_dependency "rake", '>= 0.9.0'
   s.add_runtime_dependency "httparty", '>= 0.10.0'
   s.add_runtime_dependency "nokogiri", '>= 1.5.0'
 end
