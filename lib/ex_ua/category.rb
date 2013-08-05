@@ -1,4 +1,5 @@
 # @author Andrii Dmytrenko
+require 'cgi'
 module ExUA
   # Represents a category
   # @example Usage
@@ -13,9 +14,10 @@ module ExUA
     # @param[ExUA::Client] ex_ua client
     # @param[Fixnum] id Category id
     # @param[Hash] options
-    def initialize(ex_ua, id, options={})
-      @ex_ua,@id = ex_ua, id
+    def initialize(ex_ua, options={})
+      @ex_ua = ex_ua
       @url = options[:url] || url_from_id(id)
+      @id = options[:id]
       @name = options.delete(:name)
       @parent = options.delete(:parent)
     end
@@ -49,15 +51,18 @@ module ExUA
     # Category picture
     # @return [String] url for a picture
     def picture
-      @picture ||= page_content.root.xpath("//link[@rel='image_src']/@href").first.value.split("?").first
+      @picture ||= (
+        pic = page_content.root.xpath("//link[@rel='image_src']/@href").first
+        pic && pic.value.split("?").first
+      )
     end
 
     # List of subcategories
     # @return [Array<ExUA::Category>]
     def categories
       page_content.search('table.include_0 a b').map do |link|
-        if match = link.parent.attributes["href"].value.match(%r{/view/(?<id>\d+)\?r=(?<r>\d+)})
-          Category.new(@ex_ua,match[:id], parent: self, name: link.text)
+        if match = link.parent.attributes["href"].value.match(%r{/(?<url>\d+)\?r=(?<r>\d+)})
+          Category.new(@ex_ua, parent: self, url: match['url'], name: link.text)
         end
       end.compact
     end
@@ -75,13 +80,13 @@ module ExUA
     # Next category
     # @return [ExUA::Category]
     def next
-      Category.new(@ex_ua, self.id, url: next_url)
+      Category.new(@ex_ua, id: self.id, url: next_url)
     end
 
     # Previous category
     # @return [ExUA::Category]
     def prev
-      Category.new(@ex_ua, self.id, url: prev_url)
+      Category.new(@ex_ua, id: self.id, url: prev_url)
     end
 
     # Current page number
@@ -97,25 +102,14 @@ module ExUA
       table_rows.map do |tr|
         tr.search("a[title!='']")
       end.reject(&:empty?).map do |links|
-        Item.new.tap do |item|
-          links.each { |link|
-            case link.attributes["href"].value
-            when %r{^/get/}
-              item.title = link.attributes["title"].value
-              item.id = link.attributes["href"].value.match(%r{^/get/(\d+)})[1].to_i
-            when %r{^/load}
-              item.additional_servers||=[]
-              item.additional_servers << link.attributes["title"].value.match(%r{fs(\d+)})[1].to_i
-            end
-          }
-        end
+        Item.parse_links(links)
       end
     end
 
     protected
 
     def page_content
-      @page_content||=@ex_ua.agent.get("#{ExUA::BASE_URL}#{@url}")
+      @page_content||=@ex_ua.get(@url)
     end
 
     def url_from_id(id)
