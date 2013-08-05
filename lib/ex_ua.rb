@@ -6,6 +6,6 @@ require "ex_ua/category"
 require 'mechanize'
 
 module ExUA
-  BASE_URL='http://ex.ua'
+  BASE_URL='http://www.ex.ua'
   KNOWN_BASE_CATEGORIES = %w[video audio images texts games software]
 end

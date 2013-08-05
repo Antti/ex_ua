@@ -9,6 +9,7 @@ module ExUA
   #   sub_categories = categories.first.categories
   #   items = sub_categories.first.categories.first.items
   class Category
+    class NotFound < StandardError; end
     attr_reader :id,:parent, :url
 
     # @param[ExUA::Client] ex_ua client
@@ -16,8 +17,8 @@ module ExUA
     # @param[Hash] options
     def initialize(ex_ua, options={})
       @ex_ua = ex_ua
-      @url = options[:url] || url_from_id(id)
       @id = options[:id]
+      @url = strip_url(options[:url]) || url_from_id(id)
       @name = options.delete(:name)
       @parent = options.delete(:parent)
     end
@@ -80,12 +81,14 @@ module ExUA
     # Next category
     # @return [ExUA::Category]
     def next
+      raise NotFound, "No link to a next category found" unless next?
       Category.new(@ex_ua, id: self.id, url: next_url)
     end
 
     # Previous category
     # @return [ExUA::Category]
     def prev
+      raise NotFound, "No link to a previous category found" unless prev?
       Category.new(@ex_ua, id: self.id, url: prev_url)
     end
 
@@ -108,8 +111,13 @@ module ExUA
 
     protected
 
+    def strip_url(url)
+      return unless url
+      url.sub(ExUA::BASE_URL, '')
+    end
+
     def page_content
-      @page_content||=@ex_ua.get(@url)
+      @page_content||=@ex_ua.get(url)
     end
 
     def url_from_id(id)
@@ -117,11 +125,17 @@ module ExUA
     end
 
     def next_url
-      @next_url||=page_content.root.xpath("//link[@rel='next']/@href").first.tap{|a| a.value if a}
+      @next_url||=(
+        e = page_content.root.xpath("//link[@rel='next']/@href").first
+        e && e.value
+      )
     end
 
     def prev_url
-      @prev_url||=page_content.root.xpath("//link[@rel='prev']/@href").first.tap{|a| a.value if a}
+      @prev_url||=(
+        e = page_content.root.xpath("//link[@rel='prev']/@href").first
+        e && e.value
+      )
     end
   end
 end
