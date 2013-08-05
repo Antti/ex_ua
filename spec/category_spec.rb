@@ -11,7 +11,7 @@ describe ExUA::Category do
       end
     end
     its(:items){should_not be_nil}
-    its(:name){should eq("\u0412\u0438\u0434\u0435\u043E [RU - \u0440\u0443\u0441\u0441\u043A\u0438\u0439]")}
+    its(:name){should_not be_nil}
     its(:description){should_not be_nil}
     its(:canonical_url){should_not be_nil}
     its(:next?){should be_false}

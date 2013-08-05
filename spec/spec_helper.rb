@@ -1,6 +1,6 @@
 require 'ex_ua'
 module StubbedExUAClient
-  BASE_URL = File.join(File.expand_path('..', __FILE__), 'data')
+  BASE_URL = File.expand_path('../data', __FILE__)
   def client
     @client ||= (
       c=ExUA::Client.new
