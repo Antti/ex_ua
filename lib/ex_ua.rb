@@ -6,5 +6,4 @@ require "ex_ua/category"
 
 module ExUA
   BASE_URL='http://www.ex.ua'
-  KNOWN_BASE_CATEGORIES = %w[video audio images texts games software]
 end

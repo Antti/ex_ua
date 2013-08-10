@@ -4,7 +4,7 @@ task :update_spec_data do
   begin
     base_url = 'http://www.ex.ua'
     data_path = File.expand_path('../../spec/data', __FILE__)
-    files = {'/ru/video' => 'index.html',
+    files = {'/' => 'index.html',
       '/ru/video' => 'ru_video.html',
       '/view/53667787?r=2,23775' => 'video_test.html',
       '/ru/video/foreign?r=23775' => 'foreign_video_russia.html'}

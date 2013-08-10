@@ -8,6 +8,7 @@ module ExUA
   #   categories = client.base_categories('ru')
   #
   class Client
+    KNOWN_BASE_CATEGORIES = %w[video audio images texts games software]
     # List of available languages
     # @return [Array<String>]
     def available_languages
@@ -20,11 +21,16 @@ module ExUA
     #   client.base_categories('ru')
     # @return [Array<ExUA::Category>]
     def base_categories(lang)
-      ExUA::KNOWN_BASE_CATEGORIES.map{|cat| Category.new(self, url: "/#{lang}/#{cat}")}
+      KNOWN_BASE_CATEGORIES.map{|cat| Category.new(self, url: "/#{lang}/#{cat}")}
     end
 
     def get(url)
       Nokogiri.parse(HTTParty.get("#{ExUA::BASE_URL}#{url}").body)
+    end
+
+    private
+    def base_categories_names
+      KNOWN_BASE_CATEGORIES
     end
   end
 end
