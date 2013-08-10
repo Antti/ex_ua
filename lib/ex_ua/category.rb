@@ -4,8 +4,7 @@ module ExUA
   # Represents a category
   # @example Usage
   #   #You usually get categories thru ExUA::Client object
-  #   client = ExUA::Client.new
-  #   categories = client.base_categories('ru')
+  #   categories = ExUA::Client.base_categories('ru')
   #   sub_categories = categories.first.categories
   #   items = sub_categories.first.categories.first.items
   class Category
@@ -15,8 +14,7 @@ module ExUA
     # @param[ExUA::Client] ex_ua client
     # @param[Fixnum] id Category id
     # @param[Hash] options
-    def initialize(ex_ua, options={})
-      @ex_ua = ex_ua
+    def initialize(options={})
       @id = options[:id]
       @url = strip_url(options[:url]) || url_from_id(id)
       @name = options.delete(:name)
@@ -63,7 +61,7 @@ module ExUA
     def categories
       page_content.search('table.include_0 a b').map do |link|
         if match = link.parent.attributes["href"].value.match(%r{/(?<url>\d+)\?r=(?<r>\d+)})
-          Category.new(@ex_ua, parent: self, url: match['url'], name: link.text)
+          Category.new(parent: self, url: match['url'], name: link.text)
         end
       end.compact
     end
@@ -82,14 +80,14 @@ module ExUA
     # @return [ExUA::Category]
     def next
       raise NotFound, "No link to a next category found" unless next?
-      Category.new(@ex_ua, id: self.id, url: next_url)
+      Category.new(id: self.id, url: next_url)
     end
 
     # Previous category
     # @return [ExUA::Category]
     def prev
       raise NotFound, "No link to a previous category found" unless prev?
-      Category.new(@ex_ua, id: self.id, url: prev_url)
+      Category.new(id: self.id, url: prev_url)
     end
 
     # Current page number
@@ -117,7 +115,7 @@ module ExUA
     end
 
     def page_content
-      @page_content||=@ex_ua.get(url)
+      @page_content||=ExUA::Client.get(url)
     end
 
     def url_from_id(id)

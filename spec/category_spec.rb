@@ -1,7 +1,8 @@
 require 'spec_helper'
 describe ExUA::Category do
+  before { stub_client }
   context "general 1 page category" do
-    subject{ExUA::Category.new(client, url: 'ru_video.html')}
+    subject{ExUA::Category.new(url: 'ru_video.html')}
     describe '#categories' do
       it 'returns list of child categories' do
         subject.categories.should be_kind_of(Array)
@@ -18,7 +19,7 @@ describe ExUA::Category do
     its(:prev?){should be_false}
   end
   context "general few pages category" do
-    subject{ExUA::Category.new(client, url: 'foreign_video_russia.html')}
+    subject{ExUA::Category.new(url: 'foreign_video_russia.html')}
     describe '#next' do
       it 'returns a category with same url, but different page number' do
         subject.next.url.should eq('/ru/video/foreign?r=23775&p=1')
@@ -35,7 +36,7 @@ describe ExUA::Category do
     end
   end
   context "item category" do
-    subject{ExUA::Category.new(client, url: 'video_test.html')}
+    subject{ExUA::Category.new(url: 'video_test.html')}
     its(:picture){should_not be_nil}
   end
 end

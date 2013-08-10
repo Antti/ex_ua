@@ -1,5 +1,6 @@
 require 'httparty'
 require 'nokogiri'
+require 'singleton'
 
 module ExUA
   # Client for ExUA
@@ -8,11 +9,19 @@ module ExUA
   #   categories = client.base_categories('ru')
   #
   class Client
+    include Singleton
     KNOWN_BASE_CATEGORIES = %w[video audio images texts games software]
+    class<<self
+      [:available_languages, :base_categories, :get].each do |met|
+        define_method(met) do |*args| #delegate to instance
+          instance.public_send(met, *args)
+        end
+      end
+    end
     # List of available languages
     # @return [Array<String>]
     def available_languages
-      @available_langauges||=get('/').search('select[name=lang] option').inject({}){|acc,el| acc[el.attributes["value"].value]=el.text;acc}
+      @available_langauges||=ExUA::Client.get('/').search('select[name=lang] option').inject({}){|acc,el| acc[el.attributes["value"].value]=el.text;acc}
     end
 
     # List of base categories for a given language
@@ -21,7 +30,7 @@ module ExUA
     #   client.base_categories('ru')
     # @return [Array<ExUA::Category>]
     def base_categories(lang)
-      KNOWN_BASE_CATEGORIES.map{|cat| Category.new(self, url: "/#{lang}/#{cat}")}
+      KNOWN_BASE_CATEGORIES.map{|cat| Category.new(url: "/#{lang}/#{cat}")}
     end
 
     def get(url)
