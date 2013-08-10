@@ -1,6 +1,7 @@
 require 'httparty'
 require 'nokogiri'
 require 'singleton'
+require 'uri'
 
 module ExUA
   # Client for ExUA
@@ -34,7 +35,7 @@ module ExUA
     end
 
     def get(url)
-      Nokogiri.parse(HTTParty.get("#{ExUA::BASE_URL}#{url}").body)
+      Nokogiri.parse(HTTParty.get(URI.join(ExUA::BASE_URL,url).to_s).body)
     end
 
     private
