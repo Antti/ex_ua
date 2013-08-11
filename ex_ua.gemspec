@@ -24,4 +24,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake", '>= 0.9.0'
   s.add_runtime_dependency "httparty", '>= 0.10.0'
   s.add_runtime_dependency "nokogiri", '>= 1.5.0'
+  s.add_runtime_dependency "addressable", '>= 2.3.0'
 end

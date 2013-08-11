@@ -1,3 +1,4 @@
+require 'addressable/uri'
 # @author Andrii Dmytrenko
 module ExUA
   # Download item
@@ -16,15 +17,31 @@ module ExUA
         }
       end
     end
-    # Actual download url.
-    # You can add ?fs_id=server_id  param to download form #additional_servers
-    # @return[String] download_url
-    def download_url
-      "#{ExUA::BASE_URL}#{url}"
+
+    # Queries ex.ua to get a real url to fetch data from (follows redirect)
+    def retrieve_real_load_url
+      retrieve_real_url(download_uri)
     end
 
-    def url
-      @url ||= "/load/#{self.id}"
+    def retrieve_real_get_url
+      retrieve_real_url(get_uri)
+    end
+
+    # Actual download url with ex.ua included
+    # You can add ?fs_id=server_id  param to download form #additional_servers
+    # @return[Addressable::URI]
+
+    def get_uri
+      @get_url ||= Addressable::URI.join(ExUA::BASE_URL,"/get/#{self.id}")
+    end
+
+    def download_uri
+      @downoadload_url ||= Addressable::URI.join(ExUA::BASE_URL, "/load/#{self.id}")
+    end
+
+    private
+    def retrieve_real_url(uri)
+      ExUA::ExUAFetcher.get_redirect(uri)
     end
   end
 end

@@ -1,5 +1,5 @@
 # @author Andrii Dmytrenko
-require 'cgi'
+require 'addressable/uri'
 module ExUA
   # Represents a category
   # @example Usage
@@ -9,24 +9,21 @@ module ExUA
   #   items = sub_categories.first.categories.first.items
   class Category
     class NotFound < StandardError; end
-    attr_reader :id,:parent, :url
+    attr_reader :id,:parent, :uri
 
     # @param[ExUA::Client] ex_ua client
     # @param[Fixnum] id Category id
     # @param[Hash] options
     def initialize(options={})
       @id = options[:id]
-      @url = strip_url(options[:url]) || url_from_id(id)
+      @uri = Addressable::URI.parse(options[:url] || url_from_id(id))
+      @uri.site = ExUA::BASE_URL
       @name = options.delete(:name)
       @parent = options.delete(:parent)
     end
 
     def to_s
       "id:#{id} name:'#{name}' page: #{page}"
-    end
-
-    def inspect
-      "#<#{self.class}: #{to_s}>"
     end
 
     # Canonical url
@@ -60,7 +57,7 @@ module ExUA
     # @return [Array<ExUA::Category>]
     def categories
       page_content.search('table.include_0 a b').map do |link|
-        if match = link.parent.attributes["href"].value.match(%r{/(?<url>\d+)\?r=(?<r>\d+)})
+        if match = link.parent.attributes["href"].value.match(%r{(?<url>[^?]+)\?r=(?<r>\d+)})
           Category.new(parent: self, url: match['url'], name: link.text)
         end
       end.compact
@@ -93,7 +90,11 @@ module ExUA
     # Current page number
     # @return [Fixnum]
     def page
-      CGI.parse(URI.parse(@url).query||"")["p"].first.to_i || 0
+      uri.query_values["p"].to_i
+    end
+
+    def path
+      uri.path
     end
 
     # Download items
@@ -109,13 +110,8 @@ module ExUA
 
     protected
 
-    def strip_url(url)
-      return unless url
-      url.sub(ExUA::BASE_URL, '')
-    end
-
     def page_content
-      @page_content||=ExUA::Client.get(url)
+      @page_content||=ExUA::Client.instance.get(uri.request_uri)
     end
 
     def url_from_id(id)

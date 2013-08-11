@@ -2,7 +2,7 @@ require 'spec_helper'
 describe ExUA::Category do
   before { stub_client }
   context "general 1 page category" do
-    subject{ExUA::Category.new(url: 'ru_video.html')}
+    subject{ExUA::Category.new(url: '/ru_video.html')}
     describe '#categories' do
       it 'returns list of child categories' do
         subject.categories.should be_kind_of(Array)
@@ -17,18 +17,19 @@ describe ExUA::Category do
     its(:canonical_url){should_not be_nil}
     its(:next?){should be_false}
     its(:prev?){should be_false}
+    its(:uri){should eq(Addressable::URI.parse('http://www.ex.ua/ru_video.html'))}
   end
   context "general few pages category" do
-    subject{ExUA::Category.new(url: 'foreign_video_russia.html')}
+    subject{ExUA::Category.new(url: '/foreign_video_russia.html')}
     describe '#next' do
       it 'returns a category with same url, but different page number' do
-        subject.next.url.should eq('/ru/video/foreign?r=23775&p=1')
+        subject.next.uri.request_uri.should eq('/ru/video/foreign?r=23775&p=1')
       end
     end
     describe '#prev' do
       it 'returns a category with same url, but different page number' do
         pending 'find a page with prev'
-        expect(subject.prev.url).to eq('')
+        expect(subject.prev.uri).to eq('')
       end
       it 'raises error when no prev url found' do
         expect{subject.prev}.to raise_error(ExUA::Category::NotFound)
@@ -36,7 +37,7 @@ describe ExUA::Category do
     end
   end
   context "item category" do
-    subject{ExUA::Category.new(url: 'video_test.html')}
+    subject{ExUA::Category.new(url: '/video_test.html')}
     its(:picture){should_not be_nil}
   end
 end
