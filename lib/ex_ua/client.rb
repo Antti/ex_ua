@@ -43,6 +43,16 @@ module ExUA
       KNOWN_BASE_CATEGORIES.map{|cat| Category.new(url: "/#{lang}/#{cat}")}
     end
 
+    def search(text, page=0, per=20)
+      uri = Addressable::URI.parse("/search?#{Addressable::URI.form_encode(s: text, p: page, per: per)}")
+      page = get(uri)
+      page.search('table.panel tr td').map do |s|
+        s.search('a')[1]
+      end.compact.map do |link|
+        ExUA::Category.new(url: link.attributes['href'], name: link.text)
+      end
+    end
+
     def get(request_uri)
       Nokogiri.parse(HTTParty.get(Addressable::URI.join(ExUA::BASE_URL,request_uri).to_s).body)
     end

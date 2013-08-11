@@ -7,7 +7,8 @@ task :update_spec_data do
     files = {'/' => 'index.html',
       '/ru/video' => 'ru_video.html',
       '/view/53667787?r=2,23775' => 'video_test.html',
-      '/ru/video/foreign?r=23775' => 'foreign_video_russia.html'}
+      '/ru/video/foreign?r=23775' => 'foreign_video_russia.html',
+      '/search?s=futurama' => 'search?s=futurama&p=0&per=20'}
     files.each do |remote, local|
       url =  "#{base_url}#{remote}"
       puts url
