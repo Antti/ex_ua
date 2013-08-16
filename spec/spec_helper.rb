@@ -1,14 +1,9 @@
 require 'ex_ua'
-module StubbedExUAClient
-  BASE_URL = File.expand_path('../data', __FILE__)
-  def stub_client
-    ExUA::Client.instance.stub(:get) do |page|
-      page = '/index.html' if page == '/'
-      Nokogiri.parse(File.new("#{BASE_URL}#{page}", external_encoding: Encoding::UTF_8).read)
-    end
-  end
-end
+require 'vcr'
 
-RSpec.configure do |config|
-  config.include StubbedExUAClient
+VCR.configure do |c|
+  c.cassette_library_dir = 'spec/cassettes'
+  c.hook_into :webmock # or :fakeweb
+  c.default_cassette_options = { :record => :new_episodes }
+  c.configure_rspec_metadata!
 end

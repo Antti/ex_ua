@@ -1,7 +1,6 @@
 require 'spec_helper'
-describe ExUA::Client do
+describe ExUA::Client, :vcr => true do
   subject{ described_class }
-  before { stub_client }
   describe '#available_languages' do
     it 'returns list of available languages' do
       subject.available_languages.should be_kind_of(Hash)
