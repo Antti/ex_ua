@@ -19,24 +19,35 @@ describe ExUA::Category, :vcr => true do
     its(:uri){should eq(Addressable::URI.parse('http://www.ex.ua/ru/video'))}
   end
   context "general few pages category" do
-    subject{ExUA::Category.new(url: '/ru/video/foreign')}
-    describe '#next' do
-      it 'returns a category with same url, but different page number' do
-        subject.next.uri.request_uri.should eq('/ru/video/foreign?p=1')
+    context "on third page" do
+      subject{ExUA::Category.new(url: '/ru/video/foreign?p=2')}
+      describe '#prev' do
+        it 'returns a category with same url, but previous page number' do
+          expect(subject.prev.uri.request_uri).to eq('/ru/video/foreign?p=1')
+        end
+      end
+      describe '#next' do
+        it 'returns a category with same url, but different page number' do
+          subject.next.uri.request_uri.should eq('/ru/video/foreign?p=3')
+        end
       end
     end
-    describe '#prev' do
-      it 'returns a category with same url, but different page number' do
-        pending 'find a page with prev'
-        expect(subject.prev.uri).to eq('')
-      end
-      it 'raises error when no prev url found' do
-        expect{subject.prev}.to raise_error(ExUA::Category::NotFound)
+    context "on a first page" do
+      subject{ExUA::Category.new(url: '/ru/video/foreign')}
+      describe '#prev' do
+        it 'raises error when no prev url found' do
+          expect{subject.prev}.to raise_error(ExUA::Category::NotFound)
+        end
       end
     end
   end
   context "item category" do
     subject{ExUA::Category.new(url: '/71902463')}
     its(:picture){should_not be_nil}
+    describe '#items' do
+      it 'has an array of items' do
+        subject.items.size.should_not eq(0)
+      end
+    end
   end
 end

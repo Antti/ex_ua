@@ -3,7 +3,7 @@ require 'addressable/uri'
 module ExUA
   # Download item
   class Item < Struct.new(:id, :title, :additional_servers)
-    def self.parse_links(links)
+    def self.parse(links)
       self.new.tap do |item|
         links.each { |link|
           case link.attributes["href"].value
@@ -20,22 +20,32 @@ module ExUA
 
     # Queries ex.ua to get a real url to fetch data from (follows redirect)
     def retrieve_real_load_url
-      retrieve_real_url(download_uri)
+      retrieve_real_url(load_uri)
     end
 
+    # URI with content-disposition: attachment
     def retrieve_real_get_url
       retrieve_real_url(get_uri)
     end
 
+    # @params[String] save_to File location to save to
+    # @return[String] item content
+    def download(save_to=nil)
+      content = HTTParty.get(retrieve_real_load_url).body
+      File.write(save_to, content) if save_to
+      content
+    end
+
     # Actual download url with ex.ua included
     # You can add ?fs_id=server_id  param to download form #additional_servers
+    # URI with content-disposition: attachment
     # @return[Addressable::URI]
 
     def get_uri
       @get_url ||= Addressable::URI.join(ExUA::BASE_URL,"/get/#{self.id}")
     end
 
-    def download_uri
+    def load_uri
       @downoadload_url ||= Addressable::URI.join(ExUA::BASE_URL, "/load/#{self.id}")
     end
 

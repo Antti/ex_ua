@@ -93,6 +93,8 @@ module ExUA
       uri.query_values["p"].to_i
     end
 
+    # Category's path
+    # @return [String]
     def path
       uri.path
     end
@@ -104,7 +106,7 @@ module ExUA
       table_rows.map do |tr|
         tr.search("a[title!='']")
       end.reject(&:empty?).map do |links|
-        Item.parse_links(links)
+        Item.parse(links)
       end
     end
 

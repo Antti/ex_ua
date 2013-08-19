@@ -4,20 +4,21 @@ require 'singleton'
 require 'addressable/uri'
 
 module ExUA
-  # Client for ExUA
-  # @example Usage
-  #   client = ExUA::Client.new
-  #   categories = client.base_categories('ru')
-  #
   class ExUAFetcher
     include HTTParty
     no_follow true
+    # Returns the redirect target for a given uri
     def self.get_redirect(uri)
       get Addressable::URI.parse(uri).normalize.to_s
     rescue HTTParty::RedirectionTooDeep => e
       e.response["location"]
     end
   end
+  # Client for ExUA
+  # @example Usage
+  #   client = ExUA::Client.new
+  #   categories = client.base_categories('ru')
+  #
   class Client
     include Singleton
     KNOWN_BASE_CATEGORIES = %w[video audio images texts games software]
@@ -40,7 +41,7 @@ module ExUA
     #   client.base_categories('ru')
     # @return [Array<ExUA::Category>]
     def base_categories(lang)
-      KNOWN_BASE_CATEGORIES.map{|cat| Category.new(url: "/#{lang}/#{cat}")}
+      base_categories_names.map{|cat| Category.new(url: "/#{lang}/#{cat}")}
     end
 
     def search(text, page=0, per=20)
@@ -53,8 +54,8 @@ module ExUA
       end
     end
 
-    def get(request_uri)
-      Nokogiri.parse(HTTParty.get(Addressable::URI.join(ExUA::BASE_URL,request_uri).to_s).body)
+    def get(path)
+      Nokogiri.parse(HTTParty.get(Addressable::URI.join(ExUA::BASE_URL,path).to_s).body)
     end
 
     private
