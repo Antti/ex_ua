@@ -90,7 +90,7 @@ module ExUA
     # Current page number
     # @return [Fixnum]
     def page
-      uri.query_values["p"].to_i
+      uri.query_values["p"].to_i rescue 0
     end
 
     # Category's path

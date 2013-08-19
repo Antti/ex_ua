@@ -39,6 +39,11 @@ describe ExUA::Category, :vcr => true do
           expect{subject.prev}.to raise_error(ExUA::Category::NotFound)
         end
       end
+      describe '#page' do
+        it 'return 0 as a page number' do
+          expect(subject.page).to eq(0)
+        end
+      end
     end
   end
   context "item category" do
@@ -46,7 +51,7 @@ describe ExUA::Category, :vcr => true do
     its(:picture){should_not be_nil}
     describe '#items' do
       it 'has an array of items' do
-        subject.items.size.should_not eq(0)
+        expect(subject.items.size).not_to eq(0)
       end
     end
   end
