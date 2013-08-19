@@ -26,6 +26,10 @@ module ExUA
       "id:#{id} name:'#{name}' page: #{page}"
     end
 
+    def inspect
+      "<#{self.class.name}: #{to_s}>"
+    end
+
     # Canonical url
     # @return [String]
     def canonical_url
