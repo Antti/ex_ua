@@ -14,11 +14,11 @@ describe ExUA::Item, vcr: true do
       subject.download.content_type.should eq('image/png')
     end
     it 'returns response with content of a file' do
-      subject.download.body[0..7].bytes.should eq png_header
+      subject.download.body[0..7].bytes.to_a.should eq png_header
     end
     it 'saves content to a file' do
       subject.download(tmp_file)
-      tmp_file.read[0..7].bytes.should eq png_header
+      tmp_file.read[0..7].bytes.to_a.should eq png_header
     end
   end
   describe '#head' do
