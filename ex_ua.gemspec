@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.summary     = %q{An http://ex.ua/ API}
   s.description = %q{Ruby API for ex.ua}
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files         = `git ls-files | grep -v spec/cassettes`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/* | grep -v spec/cassettes`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.license = 'MIT'
