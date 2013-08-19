@@ -7,11 +7,9 @@ Gem::Specification.new do |s|
   s.version     = ExUa::VERSION
   s.authors     = ["Andriy Dmytrenko"]
   s.email       = ["refresh.xss@gmail.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/Antti/ex_ua"
   s.summary     = %q{An http://ex.ua/ API}
   s.description = %q{Ruby API for ex.ua}
-
-  s.rubyforge_project = "ex_ua"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

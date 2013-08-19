@@ -10,12 +10,23 @@ describe ExUA::Item, vcr: true do
     after(:each) do
       tmp_file.unlink
     end
-    it 'returns content of a file' do
-      subject.download[0..7].bytes.should eq png_header
+    it 'returns response with content-type' do
+      subject.download.content_type.should eq('image/png')
+    end
+    it 'returns response with content of a file' do
+      subject.download.body[0..7].bytes.should eq png_header
     end
     it 'saves content to a file' do
       subject.download(tmp_file)
       tmp_file.read[0..7].bytes.should eq png_header
+    end
+  end
+  describe '#head' do
+    it 'has content-type' do
+      subject.head.content_type.should eq('image/png')
+    end
+    it 'has content-length' do
+      subject.head.content_length.should_not be_nil
     end
   end
   its(:get_uri){should eq Addressable::URI.parse("http://www.ex.ua/get/#{id}")}

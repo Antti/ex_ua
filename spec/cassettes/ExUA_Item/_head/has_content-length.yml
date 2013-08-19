@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://www.ex.ua/get/68579769
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers: {}
+  response:
+    status:
+      code: 302
+      message: Moved
+    headers:
+      Server:
+      - nginx/1.4.2
+      Date:
+      - Mon, 19 Aug 2013 11:51:32 GMT
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Location:
+      - http://fs192.www.ex.ua/get/68579769/7e51d88136bc230d8ff95a9f0a566911.png
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Mon, 19 Aug 2013 11:51:41 GMT
+- request:
+    method: head
+    uri: http://fs192.www.ex.ua/get/68579769/7e51d88136bc230d8ff95a9f0a566911.png
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers: {}
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 19 Aug 2013 14:51:32 GMT
+      Server:
+      - exhttpd/0.55.10.rp
+      Accept-Ranges:
+      - bytes
+      Content-Type:
+      - image/png
+      Last-Modified:
+      - Fri, 16 Aug 2013 09:02:38 GMT
+      Content-Length:
+      - '217187'
+      Connection:
+      - close
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Mon, 19 Aug 2013 11:51:41 GMT
+recorded_with: VCR 2.5.0
