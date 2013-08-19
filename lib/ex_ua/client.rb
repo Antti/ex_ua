@@ -44,6 +44,12 @@ module ExUA
       base_categories_names.map{|cat| Category.new(url: "/#{lang}/#{cat}")}
     end
 
+    # Search for a given @text
+    # @param[String] text A term to search for
+    # @param[Integer] page Page number, starting from 0
+    # @param[Integer] per Items per page. Defaults to 20
+    # @return[Array<ExUA::Category>] list of categories
+
     def search(text, page=0, per=20)
       uri = Addressable::URI.parse("/search?#{Addressable::URI.form_encode(s: text, p: page, per: per)}")
       page = get(uri)
